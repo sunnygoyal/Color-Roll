@@ -17,6 +17,7 @@ export const DEFAULT_SETTINGS = {
   voiceURI: '',
   voiceControlEnabled: true,
   triggerPhrase: 'next color',
+  rollCooldown: 2, // Timeout in seconds
 };
 
 export function loadSavedColors() {
@@ -58,6 +59,7 @@ export function loadSavedSettings() {
       voiceURI: parsed.voiceURI || '',
       voiceControlEnabled: parsed.voiceControlEnabled ?? DEFAULT_SETTINGS.voiceControlEnabled,
       triggerPhrase: parsed.triggerPhrase || DEFAULT_SETTINGS.triggerPhrase,
+      rollCooldown: typeof parsed.rollCooldown === 'number' ? parsed.rollCooldown : DEFAULT_SETTINGS.rollCooldown,
     };
   } catch (e) {
     console.warn('Failed to parse settings from localStorage', e);

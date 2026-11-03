@@ -64,6 +64,9 @@ class StateStore {
     this.lastHeardSnippet = '';
     this.isRecordingPhraseInSettings = false;
 
+    // Cooldown timer for 2-second gap between color changes
+    this.lastChangeTime = 0;
+
     // Internal flags
     this.isSpeaking = false;
     this.recognition = null;
@@ -200,6 +203,7 @@ class StateStore {
     }
 
     this.viewMode = 'PLAYING';
+    this.lastChangeTime = Date.now();
     const initialPick = this.colors[Math.floor(Math.random() * this.colors.length)];
     this.currentColor = initialPick;
 
@@ -207,7 +211,13 @@ class StateStore {
     this.stopListening();
     playDiceLandChime(this.settings.soundEffectsEnabled);
 
+    const cooldownMs = (this.settings.rollCooldown ?? 2) * 1000;
+
     speakColorName(initialPick.name, this.settings, () => {
+      // Start mic after the configured timeout has elapsed since color was selected
+      const elapsed = Date.now() - this.lastChangeTime;
+      const remainingWait = Math.max(cooldownMs - elapsed, 200);
+
       setTimeout(() => {
         this.isSpeaking = false;
         if (this.viewMode === 'PLAYING' && this.settings.voiceControlEnabled) {
@@ -215,15 +225,21 @@ class StateStore {
           playSpeechStartTing(this.settings.soundEffectsEnabled);
         }
         render();
-      }, 350);
+      }, remainingWait);
     });
 
     render();
   }
 
   pickNextColor() {
-    if (this.colors.length === 0 || this.isChanging) return;
+    const now = Date.now();
+    const cooldownMs = (this.settings.rollCooldown ?? 2) * 1000;
+    // Configurable gap between color changes: ignore multiple fast taps
+    if (this.colors.length === 0 || this.isChanging || (now - this.lastChangeTime < cooldownMs)) {
+      return;
+    }
 
+    this.lastChangeTime = now;
     this.isChanging = true;
     this.isSpeaking = true;
     this.stopListening();
@@ -243,6 +259,10 @@ class StateStore {
       playDiceLandChime(this.settings.soundEffectsEnabled);
 
       speakColorName(nextPick.name, this.settings, () => {
+        // Start mic after the same timeout has elapsed since color was picked
+        const elapsed = Date.now() - this.lastChangeTime;
+        const remainingWait = Math.max(cooldownMs - elapsed, 200);
+
         setTimeout(() => {
           this.isSpeaking = false;
           if (this.viewMode === 'PLAYING' && this.settings.voiceControlEnabled) {
@@ -250,7 +270,7 @@ class StateStore {
             playSpeechStartTing(this.settings.soundEffectsEnabled);
           }
           render();
-        }, 350);
+        }, remainingWait);
       });
 
       render();
@@ -354,7 +374,7 @@ function render() {
       isPlaying ? '' : 'bg-slate-950 text-slate-100'
     }">
       <!-- Top Bar -->
-      <header class="w-full px-5 sm:px-8 py-4 flex items-center justify-between gap-4 transition-colors z-30 ${
+      <header onclick="event.stopPropagation()" class="w-full px-5 sm:px-8 py-4 flex items-center justify-between gap-4 transition-colors z-30 ${
         isPlaying
           ? isDarkText
             ? 'border-b border-black/10 bg-black/5'
@@ -441,89 +461,17 @@ function render() {
           !isPlaying
             ? renderSetupView()
             : `
-          <!-- Full Screen Play View -->
-          <div id="play-stage" class="flex-1 w-full flex flex-col items-center justify-center px-4 py-8 cursor-pointer relative">
-            <div class="text-center space-y-3 max-w-2xl mx-auto my-auto transition-transform duration-200">
-              <h1 class="text-5xl sm:text-7xl md:text-8xl font-black tracking-tight leading-none ${textColor}">
+          <!-- Full Screen Play View: tap anywhere to roll next color -->
+          <div id="play-stage" class="flex-1 w-full flex flex-col items-center justify-center px-6 py-12 cursor-pointer relative select-none">
+            <div class="text-center space-y-4 max-w-4xl mx-auto my-auto transition-transform duration-200 pointer-events-none">
+              <h1 class="text-6xl sm:text-8xl md:text-9xl font-black tracking-tight leading-none ${textColor}" style="text-wrap: balance;">
                 ${store.currentColor ? store.currentColor.name : 'Ready'}
               </h1>
 
-              <div class="flex items-center justify-center gap-3 pt-2">
-                <span class="text-sm sm:text-base font-mono uppercase tracking-widest font-semibold ${subtextColor}">
+              <div class="pt-2">
+                <span class="text-base sm:text-lg font-mono uppercase tracking-widest font-semibold ${subtextColor}">
                   ${store.currentColor ? store.currentColor.hex : ''}
                 </span>
-
-                <button
-                  id="btn-repeat-voice"
-                  class="p-1.5 rounded-lg border transition-colors cursor-pointer ${navBtn}"
-                  title="Hear name again"
-                >
-                  ${ICONS.volume}
-                </button>
-              </div>
-            </div>
-
-            <!-- Next Color Button -->
-            <div class="mt-auto mb-6 w-full max-w-xs flex flex-col items-center gap-2.5 relative" id="next-action-container">
-              ${
-                store.isListeningActive && store.isAudioDetected
-                  ? `
-                <span class="absolute -inset-2.5 rounded-3xl bg-emerald-400/40 animate-ping pointer-events-none"></span>
-                <span class="absolute -inset-4 rounded-3xl bg-emerald-500/20 animate-pulse pointer-events-none"></span>
-              `
-                  : ''
-              }
-
-              <button
-                id="btn-next-color"
-                ${store.isChanging ? 'disabled' : ''}
-                class="relative w-full py-4 px-8 rounded-2xl font-black text-lg sm:text-xl shadow-2xl transition-all duration-200 transform hover:scale-105 active:scale-95 cursor-pointer flex items-center justify-center gap-3 ${
-                  isDarkText
-                    ? 'bg-slate-950 text-white hover:bg-slate-900 shadow-black/20'
-                    : 'bg-white text-slate-950 hover:bg-slate-100 shadow-black/40'
-                } ${
-                  store.isAudioDetected
-                    ? 'ring-4 ring-emerald-400 ring-offset-4 ring-offset-transparent shadow-emerald-500/50 scale-[1.03]'
-                    : store.isListeningActive
-                    ? 'ring-2 ring-emerald-400/40 ring-offset-2 ring-offset-transparent'
-                    : ''
-                }"
-              >
-                <span class="${store.isChanging ? 'animate-spin' : ''}">
-                  ${ICONS.rotateCw}
-                </span>
-                <span>Next Color</span>
-              </button>
-
-              <div class="flex flex-col items-center text-center gap-1">
-                ${
-                  store.settings.voiceControlEnabled
-                    ? `
-                  <div class="text-xs font-semibold flex items-center gap-1.5 transition-colors ${
-                    store.isAudioDetected
-                      ? 'text-emerald-400 font-bold scale-105'
-                      : isDarkText
-                      ? 'text-slate-950/90'
-                      : 'text-white/90'
-                  }">
-                    ${store.isAudioDetected ? ICONS.activity : ICONS.mic}
-                    <span>
-                      ${
-                        store.isAudioDetected
-                          ? store.lastHeardSnippet
-                            ? `Heard &ldquo;${store.lastHeardSnippet}&rdquo;...`
-                            : 'Detecting speech...'
-                          : `Say "${store.settings.triggerPhrase || 'next color'}" to roll`
-                      }
-                    </span>
-                  </div>
-                `
-                    : `
-                  <span class="text-[11px] font-medium tracking-wide ${subtextColor}">
-                    Tap screen or press Space
-                  </span>
-                `
-                }
               </div>
             </div>
           </div>
@@ -920,6 +868,31 @@ function renderSettingsModal() {
             </button>
           </div>
 
+          <!-- Configurable Timeout & Mic Delay -->
+          <div class="space-y-2 pt-2 border-t border-slate-800">
+            <div class="flex items-center justify-between text-xs">
+              <span class="font-semibold text-slate-300">Roll Gap & Mic Delay</span>
+              <span class="font-mono text-emerald-400 font-bold" id="cooldown-display">${(store.settings.rollCooldown ?? 2).toFixed(1)}s</span>
+            </div>
+            <input
+              type="range"
+              id="input-cooldown"
+              min="0.5"
+              max="5"
+              step="0.5"
+              value="${store.settings.rollCooldown ?? 2}"
+              class="w-full accent-blue-500 bg-slate-800 h-1.5 rounded-lg cursor-pointer"
+            />
+            <div class="flex justify-between text-[10px] text-slate-500">
+              <span>0.5s</span>
+              <span>2.0s</span>
+              <span>5.0s</span>
+            </div>
+            <div class="text-[11px] text-slate-400">
+              Multiple fast taps within this timeout are ignored, and the mic restarts after this delay.
+            </div>
+          </div>
+
           <!-- Speech Rate -->
           ${
             store.settings.speechEnabled
@@ -1037,36 +1010,12 @@ function bindEvents() {
     };
   }
 
-  // Play Stage: Click to roll next color
+  // Play Stage: Click anywhere on the screen to roll next color
   const playStage = document.getElementById('play-stage');
   if (playStage) {
     playStage.onclick = () => {
       store.pickNextColor();
     };
-  }
-
-  // Next Color Button
-  const btnNextColor = document.getElementById('btn-next-color');
-  if (btnNextColor) {
-    btnNextColor.onclick = (e) => {
-      e.stopPropagation();
-      store.pickNextColor();
-    };
-  }
-
-  // Hear again button
-  const btnRepeatVoice = document.getElementById('btn-repeat-voice');
-  if (btnRepeatVoice) {
-    btnRepeatVoice.onclick = (e) => {
-      e.stopPropagation();
-      store.repeatVoice();
-    };
-  }
-
-  // Next container stop propagation
-  const nextContainer = document.getElementById('next-action-container');
-  if (nextContainer) {
-    nextContainer.onclick = (e) => e.stopPropagation();
   }
 
   // Setup: Start Game
@@ -1331,7 +1280,7 @@ function bindEvents() {
 
       try {
         const rec = new SpeechRec();
-        rec.continuous = false;
+        rec.continuous = true;
         rec.interimResults = true;
         rec.lang = 'en-US';
 
@@ -1370,6 +1319,20 @@ function bindEvents() {
       } catch {
         store.isRecordingPhraseInSettings = false;
         render();
+      }
+    };
+  }
+
+  // Settings: Cooldown & Mic Delay
+  const inputCooldown = document.getElementById('input-cooldown');
+  if (inputCooldown) {
+    inputCooldown.oninput = (e) => {
+      const val = parseFloat(e.target.value);
+      store.settings.rollCooldown = val;
+      saveSettings(store.settings);
+      const display = document.getElementById('cooldown-display');
+      if (display) {
+        display.textContent = `${val.toFixed(1)}s`;
       }
     };
   }
