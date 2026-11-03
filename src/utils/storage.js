@@ -1,17 +1,15 @@
-import { ColorItem, AudioSettings } from '../types.ts';
-import { PRESET_PALETTES } from '../data/presets.ts';
+import { PRESET_PALETTES } from '../data/presets.js';
 
 const STORAGE_KEY_COLORS = 'chromadice_custom_colors';
 const STORAGE_KEY_SETTINGS = 'chromadice_settings';
-const STORAGE_KEY_LAST_MODE = 'chromadice_last_view';
 
-export const DEFAULT_COLORS: ColorItem[] = PRESET_PALETTES[0].colors.map((c, i) => ({
+export const DEFAULT_COLORS = PRESET_PALETTES[0].colors.map((c, i) => ({
   id: `default-${i}-${Date.now()}`,
   name: c.name,
   hex: c.hex,
 }));
 
-export const DEFAULT_SETTINGS: AudioSettings = {
+export const DEFAULT_SETTINGS = {
   speechEnabled: true,
   soundEffectsEnabled: true,
   speechRate: 1.0,
@@ -21,7 +19,7 @@ export const DEFAULT_SETTINGS: AudioSettings = {
   triggerPhrase: 'next color',
 };
 
-export function loadSavedColors(): ColorItem[] {
+export function loadSavedColors() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY_COLORS);
     if (!raw) return DEFAULT_COLORS;
@@ -39,7 +37,7 @@ export function loadSavedColors(): ColorItem[] {
   return DEFAULT_COLORS;
 }
 
-export function saveColors(colors: ColorItem[]): void {
+export function saveColors(colors) {
   try {
     localStorage.setItem(STORAGE_KEY_COLORS, JSON.stringify(colors));
   } catch (e) {
@@ -47,7 +45,7 @@ export function saveColors(colors: ColorItem[]): void {
   }
 }
 
-export function loadSavedSettings(): AudioSettings {
+export function loadSavedSettings() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY_SETTINGS);
     if (!raw) return DEFAULT_SETTINGS;
@@ -67,7 +65,7 @@ export function loadSavedSettings(): AudioSettings {
   }
 }
 
-export function saveSettings(settings: AudioSettings): void {
+export function saveSettings(settings) {
   try {
     localStorage.setItem(STORAGE_KEY_SETTINGS, JSON.stringify(settings));
   } catch (e) {

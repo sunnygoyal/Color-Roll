@@ -1,4 +1,5 @@
-export function getLuminance(hex: string): number {
+export function getLuminance(hex) {
+  if (!hex) return 0;
   const cleanHex = hex.replace('#', '');
   const r = parseInt(cleanHex.substring(0, 2), 16) / 255;
   const g = parseInt(cleanHex.substring(2, 4), 16) / 255;
@@ -11,7 +12,7 @@ export function getLuminance(hex: string): number {
   return a[0] * 0.2126 + a[1] * 0.7152 + a[2] * 0.0722;
 }
 
-export function getContrastColor(hex: string): 'dark' | 'light' {
+export function getContrastColor(hex) {
   try {
     const lum = getLuminance(hex);
     return lum > 0.4 ? 'dark' : 'light';
@@ -20,9 +21,9 @@ export function getContrastColor(hex: string): 'dark' | 'light' {
   }
 }
 
-export function normalizeHex(color: string): string {
+export function normalizeHex(color) {
   if (!color) return '#3B82F6';
-  let hex = color.trim();
+  let hex = String(color).trim();
   if (!hex.startsWith('#')) hex = '#' + hex;
   if (hex.length === 4) {
     hex = '#' + hex[1] + hex[1] + hex[2] + hex[2] + hex[3] + hex[3];
@@ -30,8 +31,7 @@ export function normalizeHex(color: string): string {
   return hex.toUpperCase();
 }
 
-// Basic list of reference colors to suggest a friendly name if user picks via color picker
-const KNOWN_COLORS: { name: string; r: number; g: number; b: number }[] = [
+const KNOWN_COLORS = [
   { name: 'Crimson', r: 220, g: 20, b: 60 },
   { name: 'Red', r: 239, g: 68, b: 68 },
   { name: 'Coral', r: 251, g: 113, b: 133 },
@@ -62,7 +62,7 @@ const KNOWN_COLORS: { name: string; r: number; g: number; b: number }[] = [
   { name: 'Black', r: 15, g: 23, b: 42 },
 ];
 
-export function suggestColorName(hex: string): string {
+export function suggestColorName(hex) {
   try {
     const cleanHex = hex.replace('#', '');
     const r = parseInt(cleanHex.substring(0, 2), 16);
@@ -73,7 +73,6 @@ export function suggestColorName(hex: string): string {
     let closestName = 'Custom Color';
 
     for (const color of KNOWN_COLORS) {
-      // Euclidean distance in RGB space
       const dist = Math.sqrt(
         Math.pow(r - color.r, 2) + Math.pow(g - color.g, 2) + Math.pow(b - color.b, 2)
       );

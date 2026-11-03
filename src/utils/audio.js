@@ -1,11 +1,9 @@
-import { AudioSettings } from '../types.ts';
+let audioCtx = null;
 
-let audioCtx: AudioContext | null = null;
-
-function getAudioContext(): AudioContext | null {
+function getAudioContext() {
   if (typeof window === 'undefined') return null;
   if (!audioCtx) {
-    const AudioContextClass = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
     if (AudioContextClass) {
       audioCtx = new AudioContextClass();
     }
@@ -19,7 +17,7 @@ function getAudioContext(): AudioContext | null {
 /**
  * Pleasant melodic landing chime when the color settles
  */
-export function playDiceLandChime(enabled: boolean): void {
+export function playDiceLandChime(enabled) {
   if (!enabled) return;
   try {
     const ctx = getAudioContext();
@@ -52,7 +50,7 @@ export function playDiceLandChime(enabled: boolean): void {
 /**
  * Crisp high-pitched "ting" sound when speech input starts listening
  */
-export function playSpeechStartTing(enabled: boolean): void {
+export function playSpeechStartTing(enabled) {
   if (!enabled) return;
   try {
     const ctx = getAudioContext();
@@ -63,7 +61,6 @@ export function playSpeechStartTing(enabled: boolean): void {
     const oscHarmonic = ctx.createOscillator();
     const gain = ctx.createGain();
 
-    // Pure crisp bell "ting" tone (2093 Hz - High C7 and overtone)
     osc.type = 'sine';
     osc.frequency.setValueAtTime(2093, now);
 
@@ -90,11 +87,7 @@ export function playSpeechStartTing(enabled: boolean): void {
 /**
  * Speaks the chosen color name via Web Speech API, with completion callback
  */
-export function speakColorName(
-  text: string,
-  settings: AudioSettings,
-  onEnd?: () => void
-): void {
+export function speakColorName(text, settings, onEnd) {
   if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
     if (onEnd) onEnd();
     return;
@@ -145,29 +138,22 @@ export function speakColorName(
   }
 }
 
-export function getAvailableVoices(): SpeechSynthesisVoice[] {
+export function getAvailableVoices() {
   if (typeof window === 'undefined' || !('speechSynthesis' in window)) return [];
   return window.speechSynthesis.getVoices();
 }
 
-/**
- * Check if browser supports SpeechRecognition
- */
-export function isSpeechRecognitionSupported(): boolean {
+export function isSpeechRecognitionSupported() {
   if (typeof window === 'undefined') return false;
   return 'SpeechRecognition' in window || 'webkitSpeechRecognition' in window;
 }
 
-/**
- * Request microphone permission explicitly via getUserMedia
- */
-export async function requestMicPermission(): Promise<boolean> {
+export async function requestMicPermission() {
   if (typeof navigator === 'undefined' || !navigator.mediaDevices?.getUserMedia) {
     return false;
   }
   try {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    // Stop tracks immediately, permission is cached for the origin
     stream.getTracks().forEach((track) => track.stop());
     return true;
   } catch (err) {
@@ -176,10 +162,7 @@ export async function requestMicPermission(): Promise<boolean> {
   }
 }
 
-/**
- * Flexible phrase matcher for voice command triggers
- */
-export function matchesTriggerPhrase(transcript: string, triggerPhrase: string): boolean {
+export function matchesTriggerPhrase(transcript, triggerPhrase) {
   if (!transcript || !triggerPhrase) return false;
 
   const cleanTranscript = transcript
@@ -196,15 +179,12 @@ export function matchesTriggerPhrase(transcript: string, triggerPhrase: string):
 
   if (!cleanTrigger) return false;
 
-  // Exact or substring match
   if (cleanTranscript.includes(cleanTrigger)) return true;
 
-  // Handle color / colour spelling variation
   const normTranscript = cleanTranscript.replace(/colour/g, 'color');
   const normTrigger = cleanTrigger.replace(/colour/g, 'color');
   if (normTranscript.includes(normTrigger)) return true;
 
-  // Check word match if single word
   const words = cleanTrigger.split(' ').filter(Boolean);
   if (words.length === 1) {
     const transWords = normTranscript.split(' ');

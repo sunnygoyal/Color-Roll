@@ -1,9 +1,7 @@
-import { PalettePreset } from '../types.ts';
-
-export const PRESET_PALETTES: PalettePreset[] = [
+export const PRESET_PALETTES = [
   {
     id: 'classic-dice',
-    name: 'Classic 6-Color Dice',
+    name: 'Classic 6-Color',
     description: 'Standard vibrant game colors inspired by traditional board game dice.',
     colors: [
       { name: 'Ruby Red', hex: '#EF4444' },
@@ -54,19 +52,6 @@ export const PRESET_PALETTES: PalettePreset[] = [
     ],
   },
   {
-    id: 'earthy-tones',
-    name: 'Earthy & Organic',
-    description: 'Natural mineral and botanical tones.',
-    colors: [
-      { name: 'Terracotta', hex: '#C2593F' },
-      { name: 'Ochre Sand', hex: '#D97706' },
-      { name: 'Olive Sage', hex: '#65A30D' },
-      { name: 'Deep Pine', hex: '#065F46' },
-      { name: 'Slate Indigo', hex: '#4338CA' },
-      { name: 'Warm Clay', hex: '#854D0E' },
-    ],
-  },
-  {
     id: 'kids-primary',
     name: 'Kids Primary',
     description: 'Bold, fundamental primary & secondary colors ideal for learning.',
@@ -79,7 +64,7 @@ export const PRESET_PALETTES: PalettePreset[] = [
   },
 ];
 
-export const QUICK_SWATCH_COLORS: { name: string; hex: string }[] = [
+export const QUICK_SWATCH_COLORS = [
   { name: 'Red', hex: '#EF4444' },
   { name: 'Orange', hex: '#F97316' },
   { name: 'Amber', hex: '#F59E0B' },
