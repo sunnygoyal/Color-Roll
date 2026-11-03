@@ -1,0 +1,6 @@
+{
+  "name": "ChromaDice - Color Dice Game",
+  "description": "A minimal color dice game with customizable palettes, native color picker, speech synthesis, and non-repeating rolls.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

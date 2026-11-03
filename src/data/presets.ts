@@ -1,0 +1,101 @@
+import { PalettePreset } from '../types.ts';
+
+export const PRESET_PALETTES: PalettePreset[] = [
+  {
+    id: 'classic-dice',
+    name: 'Classic 6-Color Dice',
+    description: 'Standard vibrant game colors inspired by traditional board game dice.',
+    colors: [
+      { name: 'Ruby Red', hex: '#EF4444' },
+      { name: 'Cobalt Blue', hex: '#2563EB' },
+      { name: 'Emerald Green', hex: '#10B981' },
+      { name: 'Sunflower Yellow', hex: '#FACC15' },
+      { name: 'Tangerine Orange', hex: '#F97316' },
+      { name: 'Royal Purple', hex: '#9333EA' },
+    ],
+  },
+  {
+    id: 'vibrant-rainbow',
+    name: 'Vibrant Rainbow',
+    description: 'Rich, high-visibility rainbow spectrum for rapid recognition.',
+    colors: [
+      { name: 'Crimson', hex: '#E11D48' },
+      { name: 'Flame Orange', hex: '#EA580C' },
+      { name: 'Electric Yellow', hex: '#EAB308' },
+      { name: 'Kelly Green', hex: '#16A34A' },
+      { name: 'Deep Cyan', hex: '#0891B2' },
+      { name: 'Royal Blue', hex: '#1D4ED8' },
+      { name: 'Amethyst', hex: '#7E22CE' },
+    ],
+  },
+  {
+    id: 'pastel-dreams',
+    name: 'Soft Pastels',
+    description: 'Gentle, soothing pastel shades that are easy on the eyes.',
+    colors: [
+      { name: 'Rose Petal', hex: '#FDA4AF' },
+      { name: 'Warm Apricot', hex: '#FDBA74' },
+      { name: 'Buttercream', hex: '#FEF08A' },
+      { name: 'Mint Leaf', hex: '#86EFAC' },
+      { name: 'Morning Sky', hex: '#7DD3FC' },
+      { name: 'Soft Lavender', hex: '#D8B4FE' },
+    ],
+  },
+  {
+    id: 'neon-cyber',
+    name: 'Neon Brights',
+    description: 'High-energy, punchy fluorescent hues for maximum contrast.',
+    colors: [
+      { name: 'Neon Coral', hex: '#FF2A6D' },
+      { name: 'Cyber Lime', hex: '#05FFA1' },
+      { name: 'Laser Cyan', hex: '#00F0FF' },
+      { name: 'Solar Flare', hex: '#FFE600' },
+      { name: 'Hyper Violet', hex: '#B000FF' },
+    ],
+  },
+  {
+    id: 'earthy-tones',
+    name: 'Earthy & Organic',
+    description: 'Natural mineral and botanical tones.',
+    colors: [
+      { name: 'Terracotta', hex: '#C2593F' },
+      { name: 'Ochre Sand', hex: '#D97706' },
+      { name: 'Olive Sage', hex: '#65A30D' },
+      { name: 'Deep Pine', hex: '#065F46' },
+      { name: 'Slate Indigo', hex: '#4338CA' },
+      { name: 'Warm Clay', hex: '#854D0E' },
+    ],
+  },
+  {
+    id: 'kids-primary',
+    name: 'Kids Primary',
+    description: 'Bold, fundamental primary & secondary colors ideal for learning.',
+    colors: [
+      { name: 'Red', hex: '#DC2626' },
+      { name: 'Yellow', hex: '#EAB308' },
+      { name: 'Blue', hex: '#2563EB' },
+      { name: 'Green', hex: '#16A34A' },
+    ],
+  },
+];
+
+export const QUICK_SWATCH_COLORS: { name: string; hex: string }[] = [
+  { name: 'Red', hex: '#EF4444' },
+  { name: 'Orange', hex: '#F97316' },
+  { name: 'Amber', hex: '#F59E0B' },
+  { name: 'Yellow', hex: '#EAB308' },
+  { name: 'Lime', hex: '#84CC16' },
+  { name: 'Green', hex: '#10B981' },
+  { name: 'Teal', hex: '#14B8A6' },
+  { name: 'Cyan', hex: '#06B6D4' },
+  { name: 'Sky', hex: '#0EA5E9' },
+  { name: 'Blue', hex: '#3B82F6' },
+  { name: 'Indigo', hex: '#6366F1' },
+  { name: 'Violet', hex: '#8B5CF6' },
+  { name: 'Purple', hex: '#A855F7' },
+  { name: 'Fuchsia', hex: '#D946EF' },
+  { name: 'Pink', hex: '#EC4899' },
+  { name: 'Rose', hex: '#F43F5E' },
+  { name: 'Gold', hex: '#D4AF37' },
+  { name: 'Charcoal', hex: '#334155' },
+];
