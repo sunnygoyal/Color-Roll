@@ -37,6 +37,8 @@ const ICONS = {
   x: `<svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`,
   mic: `<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>`,
   activity: `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>`,
+  maximize: `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>`,
+  minimize: `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"/></svg>`,
 };
 
 // Application State
@@ -316,6 +318,50 @@ class StateStore {
 
 const store = new StateStore();
 
+// Fullscreen management helpers
+function isFullscreen() {
+  return Boolean(
+    document.fullscreenElement ||
+    document.webkitFullscreenElement ||
+    document.mozFullScreenElement ||
+    document.msFullscreenElement
+  );
+}
+
+function toggleFullscreen() {
+  try {
+    if (!isFullscreen()) {
+      const el = document.documentElement;
+      if (el.requestFullscreen) {
+        el.requestFullscreen().catch(() => {});
+      } else if (el.webkitRequestFullscreen) {
+        el.webkitRequestFullscreen();
+      } else if (el.msRequestFullscreen) {
+        el.msRequestFullscreen();
+      }
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen().catch(() => {});
+      } else if (document.webkitExitFullscreen) {
+        document.webkitExitFullscreen();
+      } else if (document.msExitFullscreen) {
+        document.msExitFullscreen();
+      }
+    }
+  } catch (err) {
+    console.debug('Fullscreen error:', err);
+  }
+}
+
+// Keep UI synchronized with fullscreen state
+['fullscreenchange', 'webkitfullscreenchange', 'mozfullscreenchange', 'MSFullscreenChange'].forEach(
+  (evt) => {
+    document.addEventListener(evt, () => {
+      render();
+    });
+  }
+);
+
 // Attach global keyboard shortcuts
 window.addEventListener('keydown', (e) => {
   if (
@@ -346,6 +392,11 @@ window.addEventListener('keydown', (e) => {
       ...store.settings,
       speechEnabled: !store.settings.speechEnabled,
     });
+  } else if (e.key === 'f' || e.key === 'F') {
+    if (!store.isSettingsOpen && !store.isAddModalOpen) {
+      e.preventDefault();
+      toggleFullscreen();
+    }
   }
 });
 
@@ -367,14 +418,25 @@ function render() {
     ? 'bg-black/10 hover:bg-black/15 text-slate-900 border-black/15'
     : 'bg-white/10 hover:bg-white/15 text-white border-white/20';
 
+  // Strictly lock document scroll when in playing mode so no scrollbars or rubber-banding appear
+  if (isPlaying) {
+    document.documentElement.classList.add('overflow-hidden', 'h-screen', 'no-scroll');
+    document.body.classList.add('overflow-hidden', 'h-screen', 'no-scroll');
+  } else {
+    document.documentElement.classList.remove('overflow-hidden', 'h-screen', 'no-scroll');
+    document.body.classList.remove('overflow-hidden', 'h-screen', 'no-scroll');
+  }
+
   root.style.backgroundColor = isPlaying ? activeBg : '#020617';
 
   root.innerHTML = `
-    <div class="min-h-screen flex flex-col justify-between transition-colors duration-500 ease-out select-none ${
-      isPlaying ? '' : 'bg-slate-950 text-slate-100'
+    <div class="${
+      isPlaying
+        ? 'fixed inset-0 w-screen h-screen h-[100dvh] max-h-[100dvh] overflow-hidden no-scroll flex flex-col justify-between transition-colors duration-500 ease-out select-none'
+        : 'min-h-screen flex flex-col justify-between transition-colors duration-500 ease-out select-none bg-slate-950 text-slate-100'
     }">
       <!-- Top Bar -->
-      <header onclick="event.stopPropagation()" class="w-full px-5 sm:px-8 py-4 flex items-center justify-between gap-4 transition-colors z-30 ${
+      <header onclick="event.stopPropagation()" class="shrink-0 w-full px-4 sm:px-8 py-3 sm:py-4 flex items-center justify-between gap-4 transition-colors z-30 ${
         isPlaying
           ? isDarkText
             ? 'border-b border-black/10 bg-black/5'
@@ -382,7 +444,7 @@ function render() {
           : 'border-b border-slate-800 bg-slate-950/80'
       }">
         <div class="flex items-center gap-2.5">
-          <span class="text-lg font-black tracking-tight ${textColor}">
+          <span class="text-base sm:text-lg font-black tracking-tight ${textColor}">
             Color roll
           </span>
 
@@ -418,7 +480,17 @@ function render() {
           }
         </div>
 
-        <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+        <div class="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
+          <!-- Fullscreen button -->
+          <button
+            id="btn-toggle-fullscreen"
+            class="p-2 rounded-xl border transition-colors cursor-pointer ${navBtn}"
+            title="${isFullscreen() ? 'Exit fullscreen (F)' : 'Enter fullscreen (F)'}"
+            aria-label="${isFullscreen() ? 'Exit fullscreen' : 'Enter fullscreen'}"
+          >
+            ${isFullscreen() ? ICONS.minimize : ICONS.maximize}
+          </button>
+
           <button
             id="btn-toggle-voice"
             class="p-2 rounded-xl border transition-colors cursor-pointer ${
@@ -444,7 +516,7 @@ function render() {
               ? `
             <button
               id="btn-edit-colors"
-              class="px-3.5 py-1.5 rounded-xl text-xs font-bold border transition-colors flex items-center gap-1.5 cursor-pointer ${navBtn}"
+              class="px-3 sm:px-3.5 py-1.5 rounded-xl text-xs font-bold border transition-colors flex items-center gap-1.5 cursor-pointer ${navBtn}"
             >
               ${ICONS.sliders}
               <span>Edit Colors</span>
@@ -456,20 +528,20 @@ function render() {
       </header>
 
       <!-- Main Screen -->
-      <main class="flex-1 flex flex-col items-center justify-center relative w-full">
+      <main class="flex-1 w-full overflow-hidden flex flex-col items-center justify-center relative">
         ${
           !isPlaying
             ? renderSetupView()
             : `
           <!-- Full Screen Play View: tap anywhere to roll next color -->
-          <div id="play-stage" class="flex-1 w-full flex flex-col items-center justify-center px-6 py-12 cursor-pointer relative select-none">
-            <div class="text-center space-y-4 max-w-4xl mx-auto my-auto transition-transform duration-200 pointer-events-none">
-              <h1 class="text-6xl sm:text-8xl md:text-9xl font-black tracking-tight leading-none ${textColor}" style="text-wrap: balance;">
+          <div id="play-stage" class="flex-1 w-full h-full overflow-hidden flex flex-col items-center justify-center px-6 py-4 cursor-pointer relative select-none touch-manipulation">
+            <div class="text-center space-y-3 sm:space-y-4 max-w-4xl mx-auto my-auto transition-transform duration-200 pointer-events-none">
+              <h1 class="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-black tracking-tight leading-none ${textColor}" style="text-wrap: balance;">
                 ${store.currentColor ? store.currentColor.name : 'Ready'}
               </h1>
 
-              <div class="pt-2">
-                <span class="text-base sm:text-lg font-mono uppercase tracking-widest font-semibold ${subtextColor}">
+              <div class="pt-1 sm:pt-2">
+                <span class="text-sm sm:text-base md:text-lg font-mono uppercase tracking-widest font-semibold ${subtextColor}">
                   ${store.currentColor ? store.currentColor.hex : ''}
                 </span>
               </div>
@@ -980,6 +1052,14 @@ function renderSettingsModal() {
  * Bind DOM Event Listeners
  */
 function bindEvents() {
+  // Header: Toggle Fullscreen
+  const btnToggleFullscreen = document.getElementById('btn-toggle-fullscreen');
+  if (btnToggleFullscreen) {
+    btnToggleFullscreen.onclick = () => {
+      toggleFullscreen();
+    };
+  }
+
   // Header: Toggle voice
   const btnToggleVoice = document.getElementById('btn-toggle-voice');
   if (btnToggleVoice) {

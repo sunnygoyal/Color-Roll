@@ -1,22 +1,32 @@
 @import "tailwindcss";
 
 @layer base {
-  body {
+  html, body {
+    margin: 0;
+    padding: 0;
     font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
   }
 }
 
-/* 3D Dice Perspective and Cube Styles */
-.perspective-1000 {
-  perspective: 1000px;
+/* Prevent scrollbars and rubber-banding on game screen */
+html.no-scroll,
+body.no-scroll,
+.no-scroll {
+  overflow: hidden !important;
+  height: 100% !important;
+  max-height: 100dvh !important;
+  overscroll-behavior: none !important;
+  touch-action: manipulation;
+  -webkit-overflow-scrolling: auto;
 }
 
-.transform-style-3d {
-  transform-style: preserve-3d;
+/* Hide scrollbar utility */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }
-
-.backface-hidden {
-  backface-visibility: hidden;
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 /* Custom color input aesthetic */
