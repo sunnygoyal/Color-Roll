@@ -23,6 +23,38 @@ import {
 
 // SVG Icons (Inline for 100% offline self-contained standalone execution)
 const ICONS = {
+  logo: `<svg class="w-6 h-6 sm:w-7 sm:h-7 shrink-0 drop-shadow select-none transition-transform duration-300 hover:scale-105" viewBox="0 0 32 32" fill="none" aria-label="Color roll icon">
+    <defs>
+      <linearGradient id="cr-top-ui" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#FF4B72" />
+        <stop offset="100%" stop-color="#FF8A3D" />
+      </linearGradient>
+      <linearGradient id="cr-left-ui" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#7C3AED" />
+        <stop offset="100%" stop-color="#3B82F6" />
+      </linearGradient>
+      <linearGradient id="cr-right-ui" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#059669" />
+        <stop offset="100%" stop-color="#10B981" />
+      </linearGradient>
+    </defs>
+    <g>
+      <path d="M16 3.6 L26.4 9.6 C26.9 9.9 26.9 10.5 26.4 10.8 L16.4 16.5 C16.1 16.7 15.9 16.7 15.6 16.5 L5.6 10.8 C5.1 10.5 5.1 9.9 5.6 9.6 L15.6 3.6 C15.8 3.5 16.2 3.5 16 3.6 Z" fill="url(#cr-top-ui)" stroke="rgba(0,0,0,0.15)" stroke-width="0.6" stroke-linejoin="round" />
+      <path d="M5.3 11.2 L15.3 16.9 C15.7 17.1 16 17.5 16 18.0 L16 27.1 C16 27.7 15.4 28.1 14.9 27.8 L4.9 22.1 C4.5 21.9 4.3 21.5 4.3 21.0 L4.3 12.1 C4.3 11.5 4.9 11.0 5.3 11.2 Z" fill="url(#cr-left-ui)" stroke="rgba(0,0,0,0.18)" stroke-width="0.6" stroke-linejoin="round" />
+      <path d="M26.7 11.2 L16.7 16.9 C16.3 17.1 16 17.5 16 18.0 L16 27.1 C16 27.7 16.6 28.1 17.1 27.8 L27.1 22.1 C27.5 21.9 27.7 21.5 27.7 21.0 L27.7 12.1 C27.7 11.5 27.1 11.0 26.7 11.2 Z" fill="url(#cr-right-ui)" stroke="rgba(0,0,0,0.18)" stroke-width="0.6" stroke-linejoin="round" />
+    </g>
+    <path d="M16 4 L16 16.5" stroke="rgba(255,255,255,0.3)" stroke-width="0.6" stroke-linecap="round" />
+    <path d="M5.8 10.2 L16 16.5 L26.2 10.2" stroke="rgba(255,255,255,0.22)" stroke-width="0.6" stroke-linecap="round" stroke-linejoin="round" />
+    <circle cx="12" cy="8.2" r="1.15" fill="#FFFFFF" fill-opacity="0.95" />
+    <circle cx="16" cy="10.5" r="1.3" fill="#FFFFFF" fill-opacity="0.98" />
+    <circle cx="20" cy="12.8" r="1.15" fill="#FFFFFF" fill-opacity="0.95" />
+    <circle cx="8.8" cy="16.6" r="1.15" fill="#FFFFFF" fill-opacity="0.95" />
+    <circle cx="12.5" cy="22.2" r="1.15" fill="#FFFFFF" fill-opacity="0.95" />
+    <circle cx="19.2" cy="16.5" r="1.1" fill="#FFFFFF" fill-opacity="0.95" />
+    <circle cx="23.8" cy="14.3" r="1.1" fill="#FFFFFF" fill-opacity="0.95" />
+    <circle cx="19.2" cy="22.3" r="1.1" fill="#FFFFFF" fill-opacity="0.95" />
+    <circle cx="23.8" cy="20.1" r="1.1" fill="#FFFFFF" fill-opacity="0.95" />
+  </svg>`,
   volume: `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>`,
   volumeX: `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="22" y1="9" x2="16" y2="15"/><line x1="16" y1="9" x2="22" y2="15"/></svg>`,
   settings: `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>`,
@@ -422,19 +454,25 @@ function render() {
   if (isPlaying) {
     document.documentElement.classList.add('overflow-hidden', 'h-screen', 'no-scroll');
     document.body.classList.add('overflow-hidden', 'h-screen', 'no-scroll');
+    document.documentElement.style.backgroundColor = activeBg;
+    document.body.style.backgroundColor = activeBg;
   } else {
     document.documentElement.classList.remove('overflow-hidden', 'h-screen', 'no-scroll');
     document.body.classList.remove('overflow-hidden', 'h-screen', 'no-scroll');
+    document.documentElement.style.backgroundColor = '#020617';
+    document.body.style.backgroundColor = '#020617';
   }
 
   root.style.backgroundColor = isPlaying ? activeBg : '#020617';
 
   root.innerHTML = `
-    <div class="${
-      isPlaying
-        ? 'fixed inset-0 w-screen h-screen h-[100dvh] max-h-[100dvh] overflow-hidden no-scroll flex flex-col justify-between transition-colors duration-500 ease-out select-none'
-        : 'min-h-screen flex flex-col justify-between transition-colors duration-500 ease-out select-none bg-slate-950 text-slate-100'
-    }">
+    <div
+      style="background-color: ${isPlaying ? activeBg : '#020617'};"
+      class="${
+        isPlaying
+          ? 'fixed inset-0 w-screen h-screen h-[100dvh] max-h-[100dvh] overflow-hidden no-scroll flex flex-col justify-between transition-colors duration-500 ease-out select-none'
+          : 'min-h-screen flex flex-col justify-between transition-colors duration-500 ease-out select-none bg-slate-950 text-slate-100'
+      }">
       <!-- Top Bar -->
       <header onclick="event.stopPropagation()" class="shrink-0 w-full px-4 sm:px-8 py-3 sm:py-4 flex items-center justify-between gap-4 transition-colors z-30 ${
         isPlaying
@@ -443,7 +481,8 @@ function render() {
             : 'border-b border-white/10 bg-black/15'
           : 'border-b border-slate-800 bg-slate-950/80'
       }">
-        <div class="flex items-center gap-2.5">
+        <div class="flex items-center gap-2 sm:gap-2.5">
+          ${ICONS.logo}
           <span class="text-base sm:text-lg font-black tracking-tight ${textColor}">
             Color roll
           </span>
